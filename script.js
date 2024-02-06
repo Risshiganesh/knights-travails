@@ -115,15 +115,43 @@ function knightMoves(start, end) {
         const moveY = moves[1];
         const moveToGrid = board[moveX][moveY];
 
+        let exclude = false;
+
         //   ALMOST
-        console.log(currentGrid);
+        // console.log(currentGrid);
         if (currentGrid.predecessor) {
-          const parentX = currentGrid.predecessor.coordinates[0];
-          const parentY = currentGrid.predecessor.coordinates[1];
-          if (parentX === moveX && parentY === moveY) {
-            console.log("EXCLUDE");
-            continue;
+          let temp = currentGrid;
+
+          let predecessorArray = [];
+
+          while (temp) {
+            if (temp.predecessor) {
+              predecessorArray.push(temp.predecessor.coordinates);
+            }
+
+            temp = temp.predecessor;
           }
+
+          for (let k = 0; k < predecessorArray.length; k++) {
+            const currentPred = predecessorArray[k];
+
+            if (currentPred[0] === moveX && currentPred[1] === moveY) {
+              exclude = true;
+              break;
+            }
+          }
+
+          //   const parentX = currentGrid.predecessor.coordinates[0];
+          //   const parentY = currentGrid.predecessor.coordinates[1];
+          //   if (parentX === moveX && parentY === moveY) {
+          //     console.log("EXCLUDE");
+          //     continue;
+          //   }
+        }
+
+        if (exclude) {
+          console.log("EXCLUDED");
+          continue;
         }
 
         moveToGrid.predecessor = currentGrid;
@@ -132,6 +160,8 @@ function knightMoves(start, end) {
 
       index++;
     }
+
+    console.log(queue);
 
     function getSteps(node) {
       let temp = node;
@@ -160,6 +190,6 @@ function knightMoves(start, end) {
 
 // console.log(knightMoves([0, 0], [3, 3]));
 
-const newBoard = knightMoves([0, 0], [3, 5]);
+const newBoard = knightMoves([5, 4], [0, 0]);
 
 // console.log(newBoard.board);
