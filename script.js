@@ -83,113 +83,115 @@ function knightMoves(start, end) {
     y++;
   }
 
-  function searchMoves(start, end) {
-    const startX = start[0];
-    const startY = start[1];
+  function searchMoves(startCoord, endCoord) {
+    // START COORDS
+    const startX = startCoord[0];
+    const startY = startCoord[1];
     const startGrid = board[startX][startY];
 
-    const endX = end[0];
-    const endY = end[1];
+    // END COORDS
+    const endX = endCoord[0];
+    const endY = endCoord[1];
 
     let index = 0;
 
     const queue = [startGrid];
-    let found = false;
-    // let exclude = [null, null];
 
-    // console.log(queue[index]);
-    while (queue[index]) {
+    const prevCoords = [startGrid.coordinates];
+
+    const excludedCoord = [];
+
+    // node not found
+    let notFound = true;
+    // replace condition to notFound later
+    while (notFound) {
       const currentGrid = queue[index];
       const currentX = currentGrid.coordinates[0];
       const currentY = currentGrid.coordinates[1];
-      if (currentX === endX && currentY === endY) {
-        console.log("FOUND");
 
+      const movesList = currentGrid.knightMoves;
+
+      if (currentX === endX && currentY === endY) {
+        // console.log("FOUND");
+
+        notFound = false;
         getSteps(currentGrid);
         break;
       }
 
-      for (let j = 0; j < currentGrid.knightMoves.length; j++) {
-        const moves = currentGrid.knightMoves[j];
-        const moveX = moves[0];
-        const moveY = moves[1];
-        const moveToGrid = board[moveX][moveY];
+      for (let j = 0; j < movesList.length; j++) {
+        const nextCoord = movesList[j];
+
+        const nextGrid = board[nextCoord[0]][nextCoord[1]];
 
         let exclude = false;
 
-        //   ALMOST
-        // console.log(currentGrid);
-        if (currentGrid.predecessor) {
-          let temp = currentGrid;
+        //   This part filters out the previously read coords.
+        //   Previously read coords is filtered out to prevent backtracking.
+        //
+        for (let k = 0; k < prevCoords.length; k++) {
+          const excludeCoord = prevCoords[k];
 
-          let predecessorArray = [];
+          if (
+            nextCoord[0] === excludeCoord[0] &&
+            nextCoord[1] === excludeCoord[1]
+          ) {
+            excludedCoord.push(nextCoord);
+            exclude = true;
 
-          while (temp) {
-            if (temp.predecessor) {
-              predecessorArray.push(temp.predecessor.coordinates);
-            }
-
-            temp = temp.predecessor;
+            break;
           }
-
-          for (let k = 0; k < predecessorArray.length; k++) {
-            const currentPred = predecessorArray[k];
-
-            if (currentPred[0] === moveX && currentPred[1] === moveY) {
-              exclude = true;
-              break;
-            }
-          }
-
-          //   const parentX = currentGrid.predecessor.coordinates[0];
-          //   const parentY = currentGrid.predecessor.coordinates[1];
-          //   if (parentX === moveX && parentY === moveY) {
-          //     console.log("EXCLUDE");
-          //     continue;
-          //   }
         }
 
         if (exclude) {
-          console.log("EXCLUDED");
+          //   console.log("EXCLUDED");
           continue;
         }
 
-        moveToGrid.predecessor = currentGrid;
-        queue.push(moveToGrid);
+        nextGrid.predecessor = currentGrid;
+        queue.push(nextGrid);
+        prevCoords.push(nextGrid.coordinates);
       }
+      //   prevCoords.push("NEXT");
 
+      // remove this later
+      //   notFound = false;
       index++;
     }
 
-    console.log(queue);
+    // console.log(queue);
+    // console.log(prevCoords);
+    // console.log("EXCLUDED");
+    // console.log(excludedCoord);
+  }
 
-    function getSteps(node) {
-      let temp = node;
+  function getSteps(node) {
+    let temp = node;
 
-      console.log(node);
+    // console.log(node);
 
-      const stepsArray = [];
-      while (temp) {
-        // console.log(temp.coordinates);
-        stepsArray.push(temp.coordinates);
+    const stepsArray = [];
+    while (temp) {
+      // console.log(temp.coordinates);
+      stepsArray.push(temp.coordinates);
 
-        temp = temp.predecessor;
-      }
-
-      console.log(stepsArray.reverse());
+      temp = temp.predecessor;
     }
 
-    // const startGrid = startX;
-    // console.log(startGrid);
+    const reversedArray = stepsArray.reverse();
+
+    console.log(
+      `You made it in ${reversedArray.length - 1} moves!  Here's your path: `
+    );
+
+    reversedArray.forEach((array) => {
+      console.log(`[${array[0]},${array[1]}]`);
+    });
+
+    // console.log(stepsArray.reverse());
   }
 
   searchMoves(start, end);
-
-  return;
 }
 
-// console.log(knightMoves([0, 0], [3, 3]));
-
-const newBoard = knightMoves([5, 4], [0, 0]);
-
-// console.log(newBoard.board);
+knightMoves([0, 0], [7, 7]);
