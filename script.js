@@ -1,30 +1,17 @@
-// Pseudocode.
-
-// Create coordinates for all grids?
-
-// Use adjacent lists.
-
-// Make sure to not include any coordinate values below 0 and above 7.
-
-// Use depth first search.
-
-// Before you add a child node to the queue, add predecessor node's reference to it.
-
-// Once node is found, assign it to a variable, push coordinate values and recursive all the way to predecessor.
-
-// Then .reverse().
-
-// Return.
-
-// const grid = {
-
-// coordinate: [0,0],
-// moves: [//should have 8 moves at max],
-// predecessor: null,
-
-// }
-
 function knightMoves(start, end) {
+  if (
+    start[0] < 0 ||
+    start[1] < 0 ||
+    start[0] > 7 ||
+    start[1] > 7 ||
+    end[0] < 0 ||
+    end[1] < 0 ||
+    end[0] > 7 ||
+    end[1] > 7
+  ) {
+    console.log("Please input numbers, 0 and above & 7 and below.");
+    return;
+  }
   // x arrays contain y arrays in board.
   // better for immediate access.
   const board = [];
@@ -79,7 +66,6 @@ function knightMoves(start, end) {
     gridX.push(newGrid);
 
     createKnightMoves(newGrid);
-    // console.log([x, y]);
     y++;
   }
 
@@ -103,7 +89,7 @@ function knightMoves(start, end) {
 
     // node not found
     let notFound = true;
-    // replace condition to notFound later
+    //   Refactor this loop in 2nd round because it's quadratic complexity.
     while (notFound) {
       const currentGrid = queue[index];
       const currentX = currentGrid.coordinates[0];
@@ -112,8 +98,6 @@ function knightMoves(start, end) {
       const movesList = currentGrid.knightMoves;
 
       if (currentX === endX && currentY === endY) {
-        // console.log("FOUND");
-
         notFound = false;
         getSteps(currentGrid);
         break;
@@ -129,6 +113,7 @@ function knightMoves(start, end) {
         //   This part filters out the previously read coords.
         //   Previously read coords is filtered out to prevent backtracking.
         //
+        //   This is quadratic complexity because it's a triple loop.
         for (let k = 0; k < prevCoords.length; k++) {
           const excludeCoord = prevCoords[k];
 
@@ -144,7 +129,6 @@ function knightMoves(start, end) {
         }
 
         if (exclude) {
-          //   console.log("EXCLUDED");
           continue;
         }
 
@@ -152,27 +136,15 @@ function knightMoves(start, end) {
         queue.push(nextGrid);
         prevCoords.push(nextGrid.coordinates);
       }
-      //   prevCoords.push("NEXT");
-
-      // remove this later
-      //   notFound = false;
       index++;
     }
-
-    // console.log(queue);
-    // console.log(prevCoords);
-    // console.log("EXCLUDED");
-    // console.log(excludedCoord);
   }
 
   function getSteps(node) {
     let temp = node;
 
-    // console.log(node);
-
     const stepsArray = [];
     while (temp) {
-      // console.log(temp.coordinates);
       stepsArray.push(temp.coordinates);
 
       temp = temp.predecessor;
@@ -187,8 +159,6 @@ function knightMoves(start, end) {
     reversedArray.forEach((array) => {
       console.log(`[${array[0]},${array[1]}]`);
     });
-
-    // console.log(stepsArray.reverse());
   }
 
   searchMoves(start, end);
