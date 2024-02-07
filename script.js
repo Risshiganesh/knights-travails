@@ -165,3 +165,4 @@ function knightMoves(start, end) {
 }
 
 knightMoves([0, 0], [7, 7]);
+// For [0,0] to [7,7] it's a little slow, find out why when you refactor.
